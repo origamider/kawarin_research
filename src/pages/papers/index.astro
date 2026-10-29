@@ -1,0 +1,23 @@
+---
+import Base from '../../layouts/Base.astro';
+import PaperCard from '../../components/PaperCard.astro';
+import { getPapers } from '../../lib';
+const papers = (await getPapers()).sort((a, b) => a.data.priority - b.data.priority);
+const cols = [
+  ['reading', '読んでる'], ['want', '読みたい'], ['done', '読了'], ['dropped', '保留'],
+] as const;
+---
+<Base title="papers">
+  <h1>Papers</h1>
+  <div class="kanban">
+    {cols.map(([s, label]) => {
+      const list = papers.filter((p) => p.data.status === s);
+      return (
+        <div class="col">
+          <h3>{label} <span class="muted">{list.length}</span></h3>
+          {list.map((p) => <PaperCard paper={p} />)}
+        </div>
+      );
+    })}
+  </div>
+</Base>

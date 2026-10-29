@@ -1,0 +1,28 @@
+---
+// 直近 20 週のチャンク完了ヒートマップ
+interface Props { days: Record<string, number> }
+const { days } = Astro.props;
+const weeks = 20;
+const today = new Date();
+const start = new Date(today);
+start.setDate(today.getDate() - today.getDay() - (weeks - 1) * 7);
+const cells = Array.from({ length: weeks * 7 }, (_, i) => {
+  const d = new Date(start); d.setDate(start.getDate() + i);
+  const k = d.toISOString().slice(0, 10);
+  return { k, n: days[k] ?? 0, future: d > today };
+});
+const total = Object.values(days).reduce((a, b) => a + b, 0);
+---
+<div class="grass" style={`grid-template-columns: repeat(${weeks}, 1fr)`}>
+  {cells.map((c) => <i title={`${c.k}: ${c.n} chunks`} data-n={Math.min(c.n, 4)} class:list={{ future: c.future }} />)}
+</div>
+<p class="muted">これまでに完了した15分チャンク: <b>{total}</b></p>
+<style>
+  .grass { display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, 1fr); gap: 3px; max-width: 420px; }
+  i { aspect-ratio: 1; border-radius: 2px; background: var(--grass0); }
+  i[data-n="1"] { background: color-mix(in srgb, var(--good) 35%, var(--grass0)); }
+  i[data-n="2"] { background: color-mix(in srgb, var(--good) 60%, var(--grass0)); }
+  i[data-n="3"] { background: color-mix(in srgb, var(--good) 80%, var(--grass0)); }
+  i[data-n="4"] { background: var(--good); }
+  i.future { opacity: .25; }
+</style>

@@ -1,0 +1,39 @@
+---
+import Base from '../../layouts/Base.astro';
+import { render } from 'astro:content';
+import { getPapers, progress, url } from '../../lib';
+export async function getStaticPaths() {
+  return (await getPapers()).map((p) => ({ params: { id: p.id }, props: { paper: p } }));
+}
+const { paper } = Astro.props;
+const { Content } = await render(paper);
+const pr = progress(paper);
+const nextIdx = paper.data.chunks.findIndex((c) => !c.done);
+const d = paper.data;
+---
+<Base title={d.title}>
+  <p class="muted">{d.status} · {d.year} · {d.authors.join(', ')}</p>
+  <h1>{d.title}</h1>
+  <p>
+    {d.arxiv && <a href={`https://arxiv.org/abs/${d.arxiv}`}>arXiv:{d.arxiv}</a>}
+    {d.tags.map((t) => <span class="tag">{t}</span>)}
+  </p>
+  {pr.total > 0 && (
+    <section class="card">
+      <b>15分チャンク {pr.done}/{pr.total}</b>
+      <div class="bar"><span style={`width:${pr.ratio * 100}%`} /></div>
+      <ul class="chunks">
+        {d.chunks.map((c, i) => (
+          <li class:list={{ done: c.done, next: i === nextIdx }}>
+            {c.done ? '☑' : i === nextIdx ? '▶' : '☐'} {c.name}
+            {c.note && <div class="muted">{c.note}</div>}
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+  <article class="prose"><Content /></article>
+  {d.related.length > 0 && (
+    <p class="muted">関連: {d.related.map((r) => <a href={url(`/papers/${r}/`)}>{r}</a>).reduce((a: any, b: any) => [a, ' · ', b])}</p>
+  )}
+</Base>

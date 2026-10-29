@@ -1,0 +1,29 @@
+---
+import '../styles/global.css';
+import 'katex/dist/katex.min.css';
+import { url } from '../lib';
+interface Props { title?: string }
+const { title } = Astro.props;
+---
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title ? `${title} | kawarin research` : 'kawarin research'}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=JetBrains+Mono&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="site">
+        <a class="logo" href={url('/')}>▣ kawarin research</a>
+        <nav>
+          <a href={url('/')}>dashboard</a>
+          <a href={url('/papers/')}>papers</a>
+          <a href={url('/experiments/')}>experiments</a>
+        </nav>
+      </header>
+      <slot />
+    </div>
+  </body>
+</html>

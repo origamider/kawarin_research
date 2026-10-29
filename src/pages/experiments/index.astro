@@ -1,0 +1,17 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { url } from '../../lib';
+const exps = (await getCollection('experiments')).filter((e) => !e.data.draft).sort((a, b) => +b.data.date - +a.data.date);
+---
+<Base title="experiments">
+  <h1>Experiments</h1>
+  {exps.length === 0 && <p class="muted">まだ実験ログはない。</p>}
+  {exps.map((e) => (
+    <a class="card row" href={url(`/experiments/${e.id}/`)}>
+      <span class="muted">{e.data.date.toISOString().slice(0, 10)}</span> <b>{e.data.title}</b>
+      {e.data.result && <div class="muted">→ {e.data.result}</div>}
+    </a>
+  ))}
+</Base>
+<style>.row { display: block; margin-bottom: 8px; color: var(--ink); text-decoration: none; }</style>

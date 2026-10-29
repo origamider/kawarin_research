@@ -1,0 +1,39 @@
+:root {
+  --bg: #f6f3ec; --surface: #fffdf8; --ink: #1d1b16; --muted: #6b665a; --line: #e2dccd;
+  --accent: #e4572e; --accent2: #2e86ab; --good: #3a9d5d; --grass0: #e8e3d6;
+  --font: "DotGothic16", "Hiragino Sans", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14130f; --surface: #1d1c17; --ink: #efe9dc; --muted: #9c968a; --line: #333027;
+    --accent: #ff7a4d; --accent2: #5fb3d9; --good: #5cc47f; --grass0: #26241d;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); line-height: 1.7; }
+a { color: var(--accent2); }
+.wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px 64px; }
+header.site { display: flex; gap: 20px; align-items: baseline; flex-wrap: wrap; padding: 20px 0; border-bottom: 2px dashed var(--line); margin-bottom: 24px; }
+header.site .logo { font-size: 1.4rem; font-weight: 700; color: var(--ink); text-decoration: none; }
+header.site nav { display: flex; gap: 16px; flex-wrap: wrap; }
+header.site nav a { color: var(--muted); text-decoration: none; }
+header.site nav a:hover { color: var(--accent); }
+.card { background: var(--surface); border: 2px solid var(--line); border-radius: 10px; padding: 16px; }
+.grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+h1, h2, h3 { line-height: 1.3; }
+h2 { font-size: 1.15rem; margin: 32px 0 12px; }
+.muted { color: var(--muted); font-size: .9rem; }
+.tag { display: inline-block; font-family: var(--mono); font-size: .72rem; padding: 1px 6px; border: 1px solid var(--line); border-radius: 4px; margin: 2px 4px 2px 0; color: var(--muted); }
+.bar { height: 10px; background: var(--grass0); border-radius: 5px; overflow: hidden; }
+.bar > span { display: block; height: 100%; background: var(--accent); }
+.chunks { list-style: none; padding: 0; }
+.chunks li { padding: 6px 0; border-bottom: 1px dotted var(--line); }
+.chunks li.done { color: var(--muted); text-decoration: line-through; }
+.chunks li.next { color: var(--accent); font-weight: 700; }
+.kanban { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.kanban .col h3 { font-size: .95rem; margin: 0 0 8px; }
+.kanban .col .card { margin-bottom: 8px; padding: 10px 12px; }
+.prose { max-width: 72ch; }
+.prose pre { overflow-x: auto; }
+.prose img { max-width: 100%; }

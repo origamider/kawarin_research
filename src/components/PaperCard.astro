@@ -1,0 +1,18 @@
+---
+import { progress, url, type Paper } from '../lib';
+interface Props { paper: Paper }
+const { paper } = Astro.props;
+const pr = progress(paper);
+---
+<a class="card pc" href={url(`/papers/${paper.id}/`)}>
+  <div class="t">{'★'.repeat(4 - paper.data.priority)} {paper.data.title}</div>
+  <div class="muted">{paper.data.year} · {paper.data.authors[0]}</div>
+  {pr.total > 0 && <div class="bar" title={`${pr.done}/${pr.total}`}><span style={`width:${pr.ratio * 100}%`} /></div>}
+  <div>{paper.data.tags.map((t) => <span class="tag">{t}</span>)}</div>
+</a>
+<style>
+  .pc { display: block; color: var(--ink); text-decoration: none; }
+  .pc:hover { border-color: var(--accent); }
+  .t { font-weight: 700; }
+  .bar { margin: 6px 0; }
+</style>

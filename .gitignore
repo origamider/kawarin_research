@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.astro/
+.DS_Store
+# 論文PDFは著作権上公開しない
+pdfs/*
+!pdfs/.gitkeep
+.claude/settings.local.json

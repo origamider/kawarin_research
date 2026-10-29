@@ -1,0 +1,44 @@
+---
+import Base from '../layouts/Base.astro';
+import Grass from '../components/Grass.astro';
+import RLField from '../components/RLField.astro';
+import PaperCard from '../components/PaperCard.astro';
+import { getPapers, progress, chunkDays, unlockedFields, url } from '../lib';
+const papers = await getPapers();
+const reading = papers.filter((p) => p.data.status === 'reading');
+const queue = papers.filter((p) => p.data.status === 'want').sort((a, b) => a.data.priority - b.data.priority).slice(0, 4);
+const done = papers.filter((p) => p.data.status === 'done').length;
+---
+<Base>
+  <RLField unlocked={unlockedFields(papers)} />
+
+  <h2>▶ 今やる15分</h2>
+  {reading.length === 0 && <p class="muted">reading中の論文はまだない。</p>}
+  <div class="grid">
+    {reading.map((p) => {
+      const pr = progress(p);
+      const next = p.data.chunks.find((c) => !c.done);
+      return (
+        <a class="card now" href={url(`/papers/${p.id}/`)}>
+          <div class="muted">{p.data.title}</div>
+          <div class="big">{next ? next.name : '全チャンク完了！🎉'}</div>
+          <div class="bar"><span style={`width:${pr.ratio * 100}%`} /></div>
+          <div class="muted">{pr.done} / {pr.total} chunks</div>
+        </a>
+      );
+    })}
+  </div>
+
+  <h2>■ 積み上げ</h2>
+  <div class="card">
+    <Grass days={chunkDays(papers)} />
+    <p class="muted">読了 {done} 本 · 読みたい {papers.filter((p) => p.data.status === 'want').length} 本</p>
+  </div>
+
+  <h2>◆ 次に読みたい</h2>
+  <div class="grid">{queue.map((p) => <PaperCard paper={p} />)}</div>
+</Base>
+<style>
+  .now { color: var(--ink); text-decoration: none; border-color: var(--accent); }
+  .big { font-size: 1.15rem; font-weight: 700; margin: 4px 0 10px; }
+</style>
