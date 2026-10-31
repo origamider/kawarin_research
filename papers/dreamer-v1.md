@@ -6,6 +6,5 @@ year: 2019
 tags: [world-model, rssm, actor-critic]
 status: want
 priority: 1
-field: dream-forest
 related: [planet, dreamer-v2]
 ---

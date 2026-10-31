@@ -1,0 +1,40 @@
+---
+// これまでの成果（読了・考察・実験・ステップ）の合計が積み上がる曲線。点 = 1つの成果
+import type { Activity } from '../lib';
+interface Props { acts: Activity[]; days?: number }
+const { acts, days = 90 } = Astro.props;
+const COL: Record<Activity['kind'], string> = { 読了: 'var(--good)', 考察: 'var(--accent)', 実験: 'var(--accent2)', ステップ: 'var(--muted)' };
+const W = 560, H = 150, PW = W - 64;
+// frontmatter の日付は UTC 0時なので、日単位の比較は UTC でそろえる
+const today = new Date(new Date().toISOString().slice(0, 10));
+const start = new Date(+today - days * 864e5);
+const before = acts.filter((a) => a.date < start).length;
+const total = Array.from({ length: days + 1 }, (_, i) => acts.filter((a) => +a.date <= +start + i * 864e5).length);
+const max = Math.max(1, ...total);
+const x = (i: number) => (i / days) * PW;
+const y = (v: number) => H - (v / max) * (H - 20);
+const line = total.map((v, i) => `${x(i)},${y(v)}`).join(' ');
+const marks = acts.filter((a) => a.date >= start).map((a) => ({
+  a, cx: x((+a.date - +start) / 864e5), cy: y(acts.filter((b) => b.date <= a.date).length),
+}));
+const kinds = (Object.keys(COL) as Activity['kind'][]).filter((k) => acts.some((a) => a.kind === k));
+---
+<svg viewBox={`0 0 ${W} ${H + 22}`} class="curve" role="img" aria-label={`直近${days}日で成果の合計は${total.at(-1)}件`}>
+  <line x1="0" x2={PW} y1={H} y2={H} class="axis" />
+  <polygon points={`0,${H} ${line} ${PW},${H}`} class="area" />
+  <polyline points={line} class="line" />
+  {marks.map((m) => <circle cx={m.cx} cy={m.cy} r="5" fill={COL[m.a.kind]}><title>{m.a.date.toISOString().slice(0, 10)} {m.a.kind}: {m.a.title}</title></circle>)}
+  <text x={PW + 8} y={y(total.at(-1)!) + 4} class="sum">合計 {total.at(-1)}</text>
+  <text x="0" y={H + 16}>{days}日前{before > 0 && `（それ以前 ${before}）`}</text>
+  <text x={PW} y={H + 16} text-anchor="end">今日</text>
+</svg>
+<div class="legend">{kinds.map((k) => <span><i style={`background:${COL[k]}`}></i>{k}</span>)}</div>
+<style>
+  .curve { width: 100%; height: auto; font-size: 11px; fill: var(--muted); }
+  .axis { stroke: var(--line); }
+  .area { fill: var(--good); opacity: .12; }
+  .line { fill: none; stroke: var(--good); stroke-width: 2.5; }
+  .sum { fill: var(--good); font-weight: 700; }
+  .legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: .8rem; color: var(--muted); }
+  .legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 4px; }
+</style>

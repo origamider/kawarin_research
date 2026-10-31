@@ -1,0 +1,12 @@
+---
+import Base from '../../layouts/Base.astro';
+import NoteCard from '../../components/NoteCard.astro';
+import { getPapers, notes } from '../../lib';
+const list = notes(await getPapers());
+---
+<Base title="notes">
+  <h1>Notes</h1>
+  <p class="muted">論文を読んで考えたこと。</p>
+  {list.length === 0 && <p class="muted">まだ考察はない。</p>}
+  {list.map((n) => <NoteCard {...n} />)}
+</Base>

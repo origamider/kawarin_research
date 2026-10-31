@@ -1,0 +1,50 @@
+---
+interface Props { read: number }
+const { read } = Astro.props;
+---
+<section class="world" data-read={read}>
+  <div class="stage"></div>
+  <div class="panel" hidden>
+    <div class="terrain"><b>noise</b></div>
+    <div class="sun">
+      <b>sun</b>
+      <label class="row"><input type="checkbox" class="auto" /> 時間帯で自動</label>
+      <label><span>明るさ</span><input type="range" class="bright" min="0" max="1" step="0.01" value="0.5" /></label>
+      <label><span>鮮やかさ</span><input type="range" class="vivid" min="0" max="1" step="0.01" value="0.6" /></label>
+    </div>
+  </div>
+  <div class="overlay">
+    <span class="clock"></span>
+    <div class="btns">
+      <button class="like">♡ この地形が好き</button>
+      <button class="next">↻ 次の地形</button>
+      <button class="tune">⚙ 調整</button>
+      <button class="lapse">⏩ タイムラプス</button>
+    </div>
+  </div>
+</section>
+<script>
+  import { mount } from '../world/main';
+  document.querySelectorAll<HTMLElement>('.world').forEach(mount);
+</script>
+<style>
+  .world { position: relative; border-radius: 12px; overflow: hidden; background: #020a07; border: 1px solid #17301f; }
+  .stage { height: clamp(260px, 46vw, 440px); }
+  .stage :global(canvas) { display: block; }
+  .stage :global(canvas) { cursor: grab; }
+  .stage :global(canvas:active) { cursor: grabbing; }
+  .panel { position: absolute; top: 10px; right: 10px; width: 210px; max-height: calc(100% - 64px); overflow: auto; display: grid; gap: 10px; padding: 10px 12px; font-family: var(--mono); font-size: .72rem; color: #a9d8b6; background: rgba(2, 10, 7, .78); border: 1px solid #2a5a3a; border-radius: 8px; backdrop-filter: blur(4px); }
+  .panel[hidden] { display: none; }
+  .panel > div { display: grid; gap: 4px; }
+  .panel b { color: #6dffc8; font-weight: 400; letter-spacing: .1em; }
+  .panel :global(label) { display: grid; grid-template-columns: 88px 1fr; white-space: nowrap; align-items: center; gap: 6px; }
+  .panel :global(label.row) { display: flex; }
+  .panel :global(input[type=range]) { width: 100%; accent-color: #2fbf71; }
+  .panel input:disabled { opacity: .4; }
+  .overlay { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; padding: 10px 12px; font-family: var(--mono); font-size: .75rem; color: #a9d8b6; background: linear-gradient(transparent, rgba(2, 10, 7, .8)); }
+  .btns { display: flex; gap: 6px; flex-wrap: wrap; }
+  button { font: inherit; background: rgba(2, 10, 7, .6); color: #a9d8b6; border: 1px solid #2a5a3a; border-radius: 4px; padding: 3px 10px; cursor: pointer; }
+  button:hover { border-color: #6dffc8; }
+  button.on { border-color: #6dffc8; color: #6dffc8; }
+  button:disabled { opacity: .7; cursor: default; }
+</style>

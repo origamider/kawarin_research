@@ -1,0 +1,35 @@
+---
+// Read → Write → Teach の3カラム
+import { url, type Paper } from '../lib';
+interface Props { paper: Paper; link?: boolean }
+const { paper, link = false } = Astro.props;
+const { read, write, teach, title } = paper.data;
+---
+<section class="rwt">
+  {link && <a class="t" href={url(`/papers/${paper.id}/`)}>{title}</a>}
+  <div class="cols">
+    <div class="card">
+      <h3>Read<span>何を学んだか</span></h3>
+      {read ? <p>{read}</p> : <p class="empty">まだ。読んだら一言</p>}
+    </div>
+    <div class="card">
+      <h3>Write<span>疑問・仮説・接続</span></h3>
+      {write.length ? <ul>{write.map((w) => <li>{w}</li>)}</ul> : <p class="empty">まだ。引っかかりを1つ</p>}
+    </div>
+    <div class="card">
+      <h3>Teach<span>3行で説明</span></h3>
+      {teach ? <p class="teach">{teach}</p> : <p class="empty">まだ。誰かに話すつもりで</p>}
+    </div>
+  </div>
+</section>
+<style>
+  .rwt { margin-bottom: 16px; }
+  .t { display: block; color: var(--ink); font-weight: 700; margin-bottom: 8px; text-decoration: none; }
+  .cols { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  h3 { margin: 0 0 6px; font-size: 1rem; color: var(--accent); }
+  h3 span { margin-left: 8px; font-size: .75rem; color: var(--muted); font-weight: 400; }
+  p, ul { margin: 0; }
+  ul { padding-left: 1.1em; }
+  .teach { white-space: pre-line; }
+  .empty { color: var(--muted); font-size: .9rem; }
+</style>

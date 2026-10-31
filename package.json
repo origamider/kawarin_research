@@ -6,7 +6,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "next": "node scripts/next-chunk.mjs"
+    "next": "node scripts/next-step.mjs"
   },
   "dependencies": {
     "@types/three": "^0.170.0",

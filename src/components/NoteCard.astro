@@ -1,0 +1,16 @@
+---
+import { url, type Paper } from '../lib';
+interface Props { paper: Paper; excerpt: string }
+const { paper, excerpt } = Astro.props;
+---
+<a class="card note" href={url(`/papers/${paper.id}/#考察`)}>
+  <span class="muted">{paper.data.updated!.toISOString().slice(0, 10)}</span>
+  <b>{paper.data.title}</b>
+  <p>{excerpt}</p>
+</a>
+<style>
+  .note { display: block; margin-bottom: 10px; color: var(--ink); text-decoration: none; }
+  .note:hover { border-color: var(--accent); }
+  b { margin-left: 8px; }
+  p { margin: 6px 0 0; color: var(--muted); font-size: .9rem; }
+</style>

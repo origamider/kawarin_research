@@ -1,9 +1,9 @@
 ---
 name: add-paper
-description: 読みたい論文を papers/ に追加する。「〇〇読みたい」「この論文追加して」「arXiv URL を貼られた」とき、または論文を section 単位の15分チャンク（todo）に分けてと頼まれたときに使う。
+description: 読みたい論文を papers/ に追加する。「〇〇読みたい」「この論文追加して」「arXiv URL を貼られた」とき、または論文の読み方・ステップ（todo）の分け方を相談したいと言われたときに使う。
 ---
 
-# 論文を追加する / チャンクに分ける
+# 論文を追加する / ステップを相談して決める
 
 ## 追加
 1. arXiv ID・タイトル・著者・年を確認する（URL が無ければ検索して原典の arXiv を特定。推測で埋めない）
@@ -11,14 +11,18 @@ description: 読みたい論文を papers/ に追加する。「〇〇読みた�
 3. 以下の frontmatter で `papers/<slug>.md` を作る。本文は `## メモ` と `## Insights` の見出しだけ
    ```yaml
    title, arxiv, authors, year, tags, status: want, priority: 1-3,
-   field: <読了で解放されるフィールド名>, related: [既存 slug]
+   related: [既存 slug]
    ```
-4. `field` は論文の雰囲気に合う英語 kebab-case の名前。対応する `fields/<field>.json` を作る
-   （16×11 程度、`#`壁 `.`床 `*`報酬(最大8個) `^`トゲ `~`沼 `S`スタート1つ、外周は壁、全報酬に到達可能であること）
-5. 追加したらユーザーに一行で報告（タイトル・priority・解放されるフィールド名）
+4. 追加したらユーザーに一行で報告（タイトル・priority）
 
-## チャンク分割（ユーザーに頼まれたら）
-- `pdfs/<slug>.pdf` があればそれを読み、無ければ arXiv の HTML/abs を読む
-- 1チャンク = 15分で終わる大きさ（section の一部、式1つ、図1枚）。名前は「何をつかめば完了か」が分かる日本語
-- frontmatter の `chunks:` に `- { name: "..." }` で追記。status を `reading` に
-- チャンクを完了したと言われたら `done: true, date: YYYY-MM-DD` と一言 `note` を付ける。全部終わったら status を `done` にするか聞く
+## ステップ（todo）の分け方 — 勝手に分けない
+ステップは時間単位ではなく「何がわかれば一区切りか」の単位。**必ずユーザーと相談して決める。**
+
+1. `pdfs/<slug>.pdf` があればそれを、無ければ arXiv を読み、章立てを把握する
+2. 分け方の案を 2〜3 個、各1行で出して選んでもらう。例:
+   - 章ごと（2章 / 3章 / 4章 / 実験）
+   - 問いごと（「World Models と何が違う？」「なぜ RSSM は決定論と確率の両方？」…）
+   - 実装ごと（自分で書くならどの部品から？）
+3. ユーザーが「もう読んだ」部分は done で入れる（日付は聞かずに空でよい）
+4. 決まったら frontmatter の `steps:` に `- { name: "..." }` で書き、status を `reading` に
+5. ステップを終えたと言われたら `done: true, date: YYYY-MM-DD` と一言 `note`。全部終わったら status を `done` にするか聞く

@@ -1,7 +1,7 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
-const chunk = z.object({
+const step = z.object({
   name: z.string(),
   done: z.boolean().default(false),
   date: z.coerce.date().optional(),
@@ -13,14 +13,20 @@ const papers = defineCollection({
   schema: z.object({
     title: z.string(),
     arxiv: z.string().optional(),
+    impl: z.string().url().optional(), // 自分の実装へのリンク
     authors: z.array(z.string()).default([]),
     year: z.number().optional(),
     tags: z.array(z.string()).default([]),
     status: z.enum(['want', 'reading', 'done', 'dropped']).default('want'),
     priority: z.number().min(1).max(3).default(2),
-    chunks: z.array(chunk).default([]),
+    steps: z.array(step).default([]),
     related: z.array(z.string()).default([]),
-    field: z.string().optional(),
+    finished: z.coerce.date().optional(), // 読了日
+    // Read → Write → Teach（wrap skill がセッション終了時に更新する）
+    read: z.string().optional(), // 何を学んだか一言
+    write: z.array(z.string()).default([]), // 疑問・仮説・世界モデルへの接続
+    teach: z.string().optional(), // 人に説明する3行
+    updated: z.coerce.date().optional(), // 考察を最後に書いた日（notes の並び順）
     draft: z.boolean().default(false),
   }),
 });
@@ -37,4 +43,17 @@ const experiments = defineCollection({
   }),
 });
 
-export const collections = { papers, experiments };
+// 論文以外で注目しているもの（プロジェクト・ブログ・リポジトリ）
+const watch = defineCollection({
+  loader: glob({ pattern: '*.md', base: './watch' }),
+  schema: z.object({
+    title: z.string(),
+    url: z.string().url(),
+    field: z.string().optional(), // 分野（例: Physical AI）
+    added: z.coerce.date(),
+    links: z.array(z.object({ label: z.string(), url: z.string().url() })).default([]),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { papers, experiments, watch };

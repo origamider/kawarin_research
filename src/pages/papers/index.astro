@@ -2,7 +2,9 @@
 import Base from '../../layouts/Base.astro';
 import PaperCard from '../../components/PaperCard.astro';
 import { getPapers } from '../../lib';
+import { getCollection } from 'astro:content';
 const papers = (await getPapers()).sort((a, b) => a.data.priority - b.data.priority);
+const watch = (await getCollection('watch')).filter((w) => !w.data.draft).sort((a, b) => +b.data.added - +a.data.added);
 const cols = [
   ['reading', '読んでる'], ['want', '読みたい'], ['done', '読了'], ['dropped', '保留'],
 ] as const;
@@ -20,4 +22,20 @@ const cols = [
       );
     })}
   </div>
+
+  {watch.length > 0 && (
+    <>
+      <h2>注目しているもの <span class="muted">論文以外</span></h2>
+      <div class="grid">
+        {watch.map((w) => (
+          <div class="card">
+            <a href={w.data.url}><b>{w.data.title}</b></a>
+            <div class="muted">{w.data.field} · {w.data.added.toISOString().slice(0, 10)}</div>
+            <p>{w.body?.trim()}</p>
+            <div>{w.data.links.map((l) => <a class="tag" href={l.url}>{l.label}</a>)}</div>
+          </div>
+        ))}
+      </div>
+    </>
+  )}
 </Base>
