@@ -24,3 +24,9 @@ for (const p of papers.filter((p) => p.status === 'reading')) {
 if (!lines.length) lines.push('reading 中の論文なし。papers/ から1本選んで status: reading に。');
 lines.push(`今日完了したステップ: ${doneToday}`);
 console.log(lines.join('\n'));
+
+// 育つループ: 前回の tune から7日たったら知らせる
+import { existsSync } from 'node:fs';
+const mark = join(dirname(fileURLToPath(import.meta.url)), '..', 'ideas', '.last-tune');
+const lastTune = existsSync(mark) ? new Date(readFileSync(mark, 'utf8').trim()) : null;
+if (!lastTune || Date.now() - lastTune > 7 * 864e5) console.log('🌱 そろそろ育てどき → 「tune」と言う（仕組みの改善案を1〜2個出す）');
