@@ -56,4 +56,26 @@ const watch = defineCollection({
   }),
 });
 
-export const collections = { papers, experiments, watch };
+const explainers = defineCollection({
+  loader: glob({ pattern: '*/explainer-*.md', base: './papers' }),
+  schema: z.object({
+    title: z.string(),
+    paper: z.string(),
+    date: z.coerce.date().optional(), // 書いた日（成果ログに出る）
+  }),
+});
+
+const tryIdeas = defineCollection({
+  loader: glob({ pattern: '*.md', base: './try' }),
+  schema: z.object({
+    title: z.string(),
+    added: z.coerce.date(),
+    status: z.enum(['idea', 'doing', 'done', 'dropped']).default('idea'),
+    why: z.string().optional(), // やりたい理由を一言
+    started: z.coerce.date().optional(), // 着手した日（成果ログに出る）
+    finished: z.coerce.date().optional(),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { papers, experiments, watch, explainers, try: tryIdeas };

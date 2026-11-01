@@ -33,11 +33,22 @@ export async function getExperiments() {
   return (await getCollection('experiments')).filter((e) => !e.data.draft);
 }
 
-export type Activity = { date: Date; kind: '読了' | '考察' | '実験' | 'ステップ'; title: string; href: string };
+export type Activity = { date: Date; kind: '読了' | '考察' | '実験' | 'ステップ' | '解説' | 'try'; title: string; href: string };
 
-/** 成果のタイムライン（新しい順）。読了・考察・実験・ステップ完了を1本にまとめる */
-export function activities(papers: Paper[], exps: Experiment[]): Activity[] {
+/** 成果のタイムライン（新しい順）。読了・考察・実験・ステップ完了・解説書・try を1本にまとめる */
+export async function getExtras() {
+  const ex = (await getCollection('explainers')).filter((e) => e.data.date);
+  const tr = (await getCollection('try')).filter((t) => !t.data.draft);
+  return { ex, tr };
+}
+
+export function activities(papers: Paper[], exps: Experiment[], extras?: Awaited<ReturnType<typeof getExtras>>): Activity[] {
   const out: Activity[] = [];
+  for (const e of extras?.ex ?? []) out.push({ date: e.data.date!, kind: '解説', title: e.data.title, href: url(`/papers/${e.data.paper}/`) });
+  for (const t of extras?.tr ?? []) {
+    if (t.data.started) out.push({ date: t.data.started, kind: 'try', title: `着手: ${t.data.title}`, href: url('/try/') });
+    if (t.data.finished) out.push({ date: t.data.finished, kind: 'try', title: `できた: ${t.data.title}`, href: url('/try/') });
+  }
   for (const p of papers) {
     const href = url(`/papers/${p.id}/`);
     if (p.data.status === 'done' && p.data.finished) out.push({ date: p.data.finished, kind: '読了', title: p.data.title, href });

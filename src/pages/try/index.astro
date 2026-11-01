@@ -1,0 +1,27 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+const items = (await getCollection('try')).filter((t) => !t.data.draft && (t.data.status === 'idea' || t.data.status === 'doing')).sort((a, b) => +b.data.added - +a.data.added);
+const label = { idea: 'アイデア', doing: 'やってる', done: 'できた', dropped: '保留' } as const;
+---
+<Base title="try">
+  <h1>Try <span class="muted">やってみたいこと</span></h1>
+  <div class="grid">
+    {items.map((t) => (
+      <div class={`card try ${t.data.status}`}>
+        <span class="chip">{label[t.data.status]}</span>
+        <span class="muted">{t.data.added.toISOString().slice(0, 10)}</span>
+        <h3>{t.data.title}</h3>
+        {t.data.why && <p class="why">なぜ: {t.data.why}</p>}
+        <p>{t.body?.trim()}</p>
+      </div>
+    ))}
+  </div>
+</Base>
+<style>
+  .try h3 { margin: 6px 0; }
+  .chip { font-family: var(--mono); font-size: .72rem; padding: 1px 8px; border-radius: 99px; background: var(--accent); color: var(--surface); margin-right: 8px; }
+  .doing .chip { background: var(--accent2); }
+  .done .chip { background: var(--good); }
+  .why { color: var(--accent); font-size: .9rem; }
+</style>

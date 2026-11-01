@@ -3,12 +3,14 @@ import Base from '../layouts/Base.astro';
 import ActivityCurve from '../components/ActivityCurve.astro';
 import World from '../components/World.astro';
 import NoteCard from '../components/NoteCard.astro';
-import { getPapers, getExperiments, progress, notes, activities, url } from '../lib';
+import { getPapers, getExperiments, progress, notes, activities, getExtras, url } from '../lib';
 const papers = await getPapers();
 const exps = await getExperiments();
 const done = papers.filter((p) => p.data.status === 'done');
 const reading = papers.filter((p) => p.data.status === 'reading');
-const acts = activities(papers, exps);
+const extras = await getExtras();
+const acts = activities(papers, exps, extras);
+const trying = extras.tr.filter((t) => t.data.status === 'doing');
 const since = (days: number) => acts.filter((a) => +a.date > Date.now() - days * 864e5).length;
 const stats = [
   { label: '読了した論文', value: done.length, unit: '本' },
@@ -49,6 +51,17 @@ const fmt = (d: Date) => d.toISOString().slice(5, 10).replace('-', '/');
           </a>
         );
       })}
+      {trying.length > 0 && (
+        <>
+          <h2>着手中の try</h2>
+          {trying.map((t) => (
+            <a class="card now" href={url('/try/')}>
+              <b>{t.data.title}</b>
+              {t.data.why && <div class="muted">{t.data.why}</div>}
+            </a>
+          ))}
+        </>
+      )}
     </section>
     <section>
       <h2>積み上げ <span class="muted sub">直近90日の成果の合計</span></h2>
@@ -86,7 +99,7 @@ const fmt = (d: Date) => d.toISOString().slice(5, 10).replace('-', '/');
   .log li:last-child { border: 0; }
   .log .d { font-family: var(--mono); color: var(--muted); font-size: .8rem; }
   .log .k { font-size: .72rem; padding: 0 6px; border-radius: 4px; border: 1px solid currentColor; white-space: nowrap; }
-  .k-読了 { color: var(--good); } .k-考察 { color: var(--accent); } .k-実験 { color: var(--accent2); } .k-ステップ { color: var(--muted); }
+  .k-読了 { color: var(--good); } .k-考察 { color: var(--accent); } .k-実験 { color: var(--accent2); } .k-ステップ { color: var(--muted); } .k-解説 { color: var(--accent); } .k-try { color: var(--good); }
   .log a { color: var(--ink); text-decoration: none; }
   .log a:hover { color: var(--accent); }
 </style>
